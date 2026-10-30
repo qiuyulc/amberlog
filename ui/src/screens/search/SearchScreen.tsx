@@ -578,7 +578,7 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
       "耗时 " + rawText(body.get("took")) + " ms",
       "扫描 " + rawText(body.get("scan_files")) + " 个文件",
       rawText(body.get("scan_bytes")) + " 字节",
-      rawText(body.get("scan_records")) + " 条记录",
+      "实际读取 " + rawText(body.get("scan_records")) + " 条记录",
     ];
     return (rows === null ? parts : [rows, ...parts]).join(" · ");
   };
@@ -697,7 +697,14 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
       <div class="card">
         <div class="info">
           <span id="s-total">{"共 " + (count === null || mode === "sql" ? "—" : String(count)) + " 条"}</span>
-          {ok !== null && ctx === null && <span id="s-info">{info(ok.body)}</span>}
+          {ok !== null && ctx === null && (
+            <span
+              id="s-info"
+              title="实际读取量是查询引擎扫描的数据文件记录数，不代表最终命中的记录数"
+            >
+              {info(ok.body)}
+            </span>
+          )}
           <span class="spacer" />
           <button type="button" id="s-hist-toggle" disabled={mode === "sql"} onClick={toggle}>
             {toggleText}

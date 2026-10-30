@@ -5,6 +5,7 @@ import { useEffect, useMemo } from "preact/hooks";
 import { createStore, useStore, type Store } from "../lib/store.ts";
 import { formatLocal, nowUs, parseTimeInput } from "../lib/time.ts";
 import { settings } from "./settings.ts";
+import { Select } from "./Select.tsx";
 
 export interface QuickChoice {
   label: string;
@@ -127,19 +128,17 @@ export function TimeRangeInputs({ range, prefix }: { range: TimeRange; prefix: s
         value={shown(m.end, m.endText)}
         onInput={(e) => range.edit("end", e.currentTarget.value)}
       />
-      <select
+      <Select
         id={prefix + "-quick"}
         value={m.quick === null ? CUSTOM : String(m.quick)}
-        onChange={(e) => {
-          const v = e.currentTarget.value;
-          if (v !== CUSTOM) range.setQuick(BigInt(v));
+        options={[
+          { value: CUSTOM, label: "自定义" },
+          ...range.choices.map((c) => ({ value: String(c.us), label: c.label })),
+        ]}
+        onChange={(value) => {
+          if (value !== CUSTOM) range.setQuick(BigInt(value));
         }}
-      >
-        <option value={CUSTOM}>自定义</option>
-        {range.choices.map((c) => (
-          <option value={String(c.us)}>{c.label}</option>
-        ))}
-      </select>
+      />
     </span>
   );
 }

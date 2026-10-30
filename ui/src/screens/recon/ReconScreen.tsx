@@ -54,7 +54,7 @@ function CountOr({ v, absent }: { v: Json | undefined; absent: string }) {
 
 function ReconTable({ hits }: { hits: Hit[] }) {
   return (
-    <table class="recon">
+    <table class="recon" aria-label="数据对账结果">
       <thead>
         <tr>
           <th><TimeHeader label="窗口起点" /></th>

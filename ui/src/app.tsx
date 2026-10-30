@@ -6,6 +6,7 @@ import { LedgerScreen } from "./screens/ledger/LedgerScreen.tsx";
 import { ReconScreen } from "./screens/recon/ReconScreen.tsx";
 import { SearchScreen } from "./screens/search/SearchScreen.tsx";
 import { TimeZonePicker } from "./shell/TimeZonePicker.tsx";
+import { Select } from "./shell/Select.tsx";
 import {
   confirmToken,
   setScreen,
@@ -58,11 +59,12 @@ function TopBar() {
       )}
       <label class="field">
         <span>外观</span>
-        <select id="theme" value={s.theme} onChange={(e) => setTheme(e.currentTarget.value as Theme)}>
-          {THEMES.map((t) => (
-            <option value={t.id}>{t.label}</option>
-          ))}
-        </select>
+        <Select
+          id="theme"
+          value={s.theme}
+          options={THEMES.map((theme) => ({ value: theme.id, label: theme.label }))}
+          onChange={(value) => setTheme(value as Theme)}
+        />
       </label>
       <label class="field">
         <span>口令</span>

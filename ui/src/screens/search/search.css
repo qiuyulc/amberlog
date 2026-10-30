@@ -354,3 +354,168 @@
 #search table.hits tr.center td:first-child {
   box-shadow: inset 5px 0 0 var(--button);
 }
+
+/* 第一版视觉整理：把检索区域分成工具栏、条件区、字段区和结果区。 */
+#search .bar:first-child,
+#search .bar:nth-child(2) {
+  padding: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+#search .bar:first-child {
+  gap: 10px;
+}
+
+#search .bar:first-child > input {
+  min-width: 12em;
+  font-weight: 600;
+}
+
+#search .bar:nth-child(2) {
+  align-items: flex-start;
+}
+
+#search .condbox {
+  gap: 8px;
+}
+
+#search .chips {
+  min-height: 34px;
+  padding: 4px 6px;
+  border-color: var(--line-strong);
+  box-shadow: inset 0 1px 2px rgba(23, 33, 43, 0.04);
+}
+
+#search .chip {
+  min-height: 24px;
+  padding: 1px 5px 1px 10px;
+  background: color-mix(in srgb, var(--link) 8%, var(--panel));
+}
+
+#search .card {
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+#search .info {
+  min-height: 30px;
+  padding-bottom: 2px;
+}
+
+#search .info #s-total {
+  color: var(--text);
+  font-weight: 700;
+}
+
+#search .info #s-info {
+  color: var(--muted);
+}
+
+#search .hist-area {
+  padding: 8px 10px 6px;
+  background: var(--panel-subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+#search .hbars {
+  height: 76px;
+  gap: 2px;
+  padding: 4px 2px 0;
+}
+
+#search .hbar {
+  border-radius: 2px 2px 0 0;
+}
+
+#search .hbar:hover,
+#search .hbar.picked {
+  background: var(--amber-soft);
+}
+
+#search .hbar .fill {
+  border-radius: 2px 2px 0 0;
+  background: var(--amber);
+}
+
+#search table.hits tbody tr {
+  transition: background-color 100ms ease;
+}
+
+#search table.hits tbody tr:hover,
+#search table.hits tr.viewed {
+  background: var(--amber-soft);
+}
+
+#search table.hits td {
+  max-width: 34em;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+#search table.hits tr:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+#search .fields {
+  flex-basis: 232px;
+  padding: 8px;
+  background: var(--panel);
+  border-color: var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+#search .fields-head {
+  position: sticky;
+  top: -8px;
+  z-index: 1;
+  padding-bottom: 6px;
+  background: var(--panel);
+}
+
+#search .fgroup + .fgroup {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+#search .fgroup-head:hover,
+#search .fname:hover:not(:disabled) {
+  background: var(--panel-subtle);
+}
+
+#search .context-bar {
+  padding: 7px 9px;
+  background: var(--panel-subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 900px) {
+  #search .results { gap: 8px; }
+  #search .fields { flex-basis: 200px; }
+}
+
+@media (max-width: 640px) {
+  #search .bar:first-child,
+  #search .bar:nth-child(2) { padding: 7px; }
+  #search .condbox,
+  #search .condbox textarea,
+  #search .chips { min-width: 0; width: 100%; }
+  #search .results { display: block; }
+  #search .fields {
+    width: 100%;
+    max-height: 32vh;
+    margin-bottom: 8px;
+  }
+  #search .results > .card { width: 100%; }
+  #search .info { align-items: flex-start; }
+  #search .info .spacer { display: none; }
+}

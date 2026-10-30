@@ -92,7 +92,7 @@ const summaryCell = (g: (k: string) => Json | undefined, key: string): string =>
 
 function LedgerTable({ hits, onJump }: { hits: Hit[]; onJump: (dataset: string, to: "recon" | "search") => void }) {
   return (
-    <table class="ledger">
+    <table class="ledger" aria-label="数据资产台账">
       <thead>
         <tr class="group">
           {COLUMNS.map(() => (

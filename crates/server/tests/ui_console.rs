@@ -278,7 +278,8 @@ fn ui_console_token_401_marked() {
 fn ui_console_timezone_choices() {
     let (_fx, s) = start(&[]);
     let mut b = open(&s);
-    let v = b.eval("[...document.getElementById('tz').options].map(o => o.value)");
+    b.click("tz");
+    let v = b.eval("[...document.querySelectorAll('#tz-listbox [role=\\\"option\\\"]')].map(o => o.dataset.value)");
     let choices: Vec<String> = serde_json::from_value(v).unwrap();
     for z in ["UTC", "Asia/Shanghai", "America/New_York"] {
         assert!(

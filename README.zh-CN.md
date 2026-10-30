@@ -90,6 +90,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 | [API 参考](docs/api.zh-CN.md) | 写入、检索、系统表、错误、运维端点、Iceberg 只读目录 |
 | [检索界面与告警](docs/ui-and-alerting.zh-CN.md) | 检索、台账、对账三屏，定时告警 |
 | [运维指南](docs/operations.zh-CN.md) | 健康检查、指标与告警、停机与升级、审计证据、优雅退役 |
+| [本地源码构建与启动](docs/local-development.zh-CN.md) | 用当前工作树构建 UI 与 Rust 服务，并通过 Docker Compose 启动 |
 | [外部引擎直读指南](docs/external-engines.zh-CN.md) | 用 DuckDB、Spark、Trino、Apache Flink、Apache Doris、ClickHouse、StarRocks 读冷层表 |
 | [已知限制与路线图](docs/known-limitations.zh-CN.md) | 这个版本还做不到的事，以及以后的方向 |
 | [采集器接入示例](examples/collectors/README.zh-CN.md) | Vector 与 Fluent Bit 的配置 |

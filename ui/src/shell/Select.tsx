@@ -127,7 +127,7 @@ export function Select({ id, value, options, onChange, "aria-label": ariaLabel, 
         onKeyDown={onKeyDown}
       >
         <span class="custom-select__value">{selected?.label ?? value}</span>
-        <span class="custom-select__chevron" aria-hidden="true">⌄</span>
+        <span class="custom-select__chevron" aria-hidden="true" />
       </button>
       {open && options.length > 0 && (
         <div id={listboxId} class="custom-select__menu" role="listbox" aria-label={ariaLabel}>

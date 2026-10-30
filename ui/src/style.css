@@ -321,10 +321,12 @@ tbody tr:last-child td { border-bottom: none; }
 
 .custom-select__chevron {
   flex: 0 0 auto;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1;
-  transform: translateY(-1px);
+  width: 7px;
+  height: 7px;
+  margin: -3px 2px 0 0;
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg);
 }
 
 .custom-select__menu {

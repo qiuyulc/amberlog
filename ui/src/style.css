@@ -372,6 +372,27 @@ tbody tr:last-child td { border-bottom: none; }
   font-weight: 750;
 }
 
+.dataset-input {
+  min-width: 12em;
+}
+
+.dataset-input__input {
+  width: 100%;
+  padding-right: 28px;
+}
+
+.dataset-input > .custom-select__chevron {
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  margin: -5px 0 0;
+  pointer-events: none;
+}
+
+.dataset-input__menu {
+  min-width: 100%;
+}
+
 @media (max-width: 900px) {
   .topbar { align-items: flex-start; }
   .topbar .spacer { display: none; }

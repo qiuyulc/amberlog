@@ -94,7 +94,7 @@ services:
       # certificate, or really put Amberlog behind a reverse proxy that terminates TLS.
       AMBERLOG_SERVER__BEHIND_TLS_PROXY: "true"
     ports:
-      - "127.0.0.1:8800:8800"
+      - "8800:8800"
     volumes:
       - amberlog-wal:/var/lib/amberlog
     healthcheck:

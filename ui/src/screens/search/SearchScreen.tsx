@@ -14,6 +14,7 @@ import { ResultArea } from "../../shell/ResultArea.tsx";
 import { onTokenConfirmed, settings } from "../../shell/settings.ts";
 import { Time } from "../../shell/Time.tsx";
 import { TimeRangeInputs, useTimeRange, type QuickChoice } from "../../shell/TimeRange.tsx";
+import { DatasetInput } from "../../shell/DatasetInput.tsx";
 import { type Bar, bars, countsByStart, pageRows, total } from "./chart.ts";
 import { type Chip, CondBox } from "./CondBox.tsx";
 import { type Field, isStreamName } from "./fields.ts";
@@ -586,29 +587,19 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
   return (
     <section id="search" class="screen" hidden={hidden}>
       <div class="bar">
-        <input
+        <DatasetInput
           id="s-stream"
-          list="s-streams"
-          autocomplete="off"
-          aria-label="数据集"
+          listId="s-streams"
           value={stream}
-          onInput={(e) => {
-            const v = e.currentTarget.value;
-            changeStream(v);
+          options={list.map(streamOf)}
+          onInput={(value, inputType) => {
+            changeStream(value);
             // 从候选中选定（不是逐字输入）即确定数据集
-            const kind = (e as InputEvent).inputType;
-            if (kind === undefined || kind === "insertReplacementText") determine(v, true);
+            if (inputType === undefined || inputType === "insertReplacementText") determine(value, true);
           }}
-          onBlur={(e) => determine(e.currentTarget.value, true)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") determine(e.currentTarget.value, true);
-          }}
+          onBlur={(value) => determine(value, true)}
+          onEnter={(value) => determine(value, true)}
         />
-        <datalist id="s-streams">
-          {list.map((d) => (
-            <option value={streamOf(d)} />
-          ))}
-        </datalist>
         <TimeRangeInputs range={range} prefix="s" />
         {fieldsCollapsed && (
           <button

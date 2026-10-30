@@ -11,6 +11,7 @@ import { useResultRequest } from "../../shell/requests.ts";
 import { ResultArea } from "../../shell/ResultArea.tsx";
 import { Time, TimeHeader } from "../../shell/Time.tsx";
 import { TimeRangeInputs, useTimeRange, type QuickChoice } from "../../shell/TimeRange.tsx";
+import { DatasetInput } from "../../shell/DatasetInput.tsx";
 import { Count } from "../ledger/Numbers.tsx";
 import "./recon.css";
 
@@ -128,19 +129,13 @@ export function ReconScreen({ hidden }: { hidden: boolean }) {
     <section id="recon" class="screen" hidden={hidden}>
       <p class="notice" id="r-notice">{NOTE}</p>
       <div class="bar">
-        <input
+        <DatasetInput
           id="r-dataset"
-          list="r-datasets"
-          autocomplete="off"
-          aria-label="数据集"
+          listId="r-datasets"
           value={dataset}
-          onInput={(e) => setDataset(e.currentTarget.value)}
+          options={list}
+          onInput={(value) => setDataset(value)}
         />
-        <datalist id="r-datasets">
-          {list.map((d) => (
-            <option value={d} />
-          ))}
-        </datalist>
         <TimeRangeInputs range={range} prefix="r" />
         <label class="field">
           <input

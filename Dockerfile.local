@@ -1,0 +1,60 @@
+# 本地开发镜像：从当前工作树构建 UI 和 Amberlog 服务。
+# 与发布用 Dockerfile 不同，这里不需要先生成 dist/ 发版包，适合验证本地前端与 Rust 改动。
+
+FROM node:24-bookworm-slim AS ui-build
+
+WORKDIR /src
+
+# 先安装依赖，源码变化时可以复用 pnpm 安装层。
+COPY ui/package.json ui/pnpm-lock.yaml ui/.npmrc ./ui/
+RUN corepack enable \
+    && corepack install --global pnpm@10.34.7 \
+    && cd ui \
+    && pnpm install --frozen-lockfile
+
+COPY ui/build.mjs ui/tsconfig.json ./ui/
+COPY ui/src ./ui/src
+COPY crates/server/src/ui ./crates/server/src/ui
+RUN cd ui && pnpm build
+
+FROM rust:1.98.1-bookworm AS rust-build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       build-essential \
+       ca-certificates \
+       clang \
+       cmake \
+       git \
+       libclang-dev \
+       libssl-dev \
+       lld \
+       llvm \
+       pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY . .
+
+# UI 构建阶段生成的 index.html 会被 crates/server/src/ui.rs 通过 include_str! 编进二进制。
+COPY --from=ui-build /src/crates/server/src/ui/index.html crates/server/src/ui/index.html
+
+RUN cargo build --release --locked -p amberlog-server --bin amberlog
+
+FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid 10001 amberlog \
+    && useradd --system --uid 10001 --gid 10001 --home-dir /var/lib/amberlog --no-create-home --shell /usr/sbin/nologin amberlog \
+    && mkdir -p /var/lib/amberlog \
+    && chown 10001:10001 /var/lib/amberlog
+
+COPY --from=rust-build /src/target/release/amberlog /usr/local/bin/amberlog
+
+USER 10001:10001
+WORKDIR /var/lib/amberlog
+EXPOSE 8800
+ENTRYPOINT ["/usr/local/bin/amberlog"]
+CMD ["serve"]

@@ -1,0 +1,9 @@
+# 本地源码构建覆盖层。与 compose.yaml 一起使用：
+# docker compose -f compose.yaml -f compose.local.yaml up -d --build --wait
+
+services:
+  amberlog:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.local
+    image: amberlog-quickstart-local:dev

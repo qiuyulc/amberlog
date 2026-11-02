@@ -116,7 +116,7 @@ export function CondBox(p: CondBoxProps) {
   return (
     <div class="condbox">
       <span class="modes">
-        <button type="button" id="s-mode-cond" aria-pressed={p.mode === "cond"} onClick={() => p.onMode("cond")}>
+        <button type="button" id="s-mode-cond" style="margin-right:0.5em" aria-pressed={p.mode === "cond"} onClick={() => p.onMode("cond")}>
           条件
         </button>
         <button type="button" id="s-mode-sql" aria-pressed={p.mode === "sql"} onClick={() => p.onMode("sql")}>

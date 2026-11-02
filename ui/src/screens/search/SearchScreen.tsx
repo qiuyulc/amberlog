@@ -665,172 +665,172 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
         </p>
       )}
       <div class="results">
-      {!fieldsCollapsed && (
-        <FieldsBar
-          fields={table ?? null}
-          error={current === null ? null : (fieldErrors.get(current) ?? null)}
-          open={openGroups}
-          onToggleGroup={(k) => {
-            const n = new Set(openGroups);
-            if (n.has(k)) n.delete(k);
-            else n.add(k);
-            setOpenGroups(n);
-          }}
-          values={values}
-          canExpand={canExpand}
-          onToggleField={(f) => void toggleField(f)}
-          onAdd={(f, negate, v) => addCondition(detailCondition(f, negate, v))}
-          onCollapse={() => {
-            saveFieldsCollapsed(true);
-            setFieldsCollapsed(true);
-          }}
-        />
-      )}
-      <div class="card">
-        <div class="info">
-          <span id="s-total">{"共 " + (count === null || mode === "sql" ? "—" : String(count)) + " 条"}</span>
-          {ok !== null && ctx === null && (
-            <span
-              id="s-info"
-              title="实际读取量是查询引擎扫描的数据文件记录数，不代表最终命中的记录数"
-            >
-              {info(ok.body)}
-            </span>
-          )}
-          <span class="spacer" />
-          <button type="button" id="s-hist-toggle" disabled={mode === "sql"} onClick={toggle}>
-            {toggleText}
-          </button>
-          {hiddenCols.size > 0 && (
-            <span class="restore" id="s-hidden-cols">
-              {[...hiddenCols].map((c) => (
-                <button
-                  type="button"
-                  onClick={() => setHiddenCols(new Set([...hiddenCols].filter((x) => x !== c)))}
-                >
-                  {"+ " + c}
-                </button>
-              ))}
-            </span>
-          )}
-          <button
-            type="button"
-            id="s-prev"
-            disabled={shown === null || ok === null || ctx !== null || from === 0}
-            onClick={() => shown !== null && resend({ ...shown.query, from: Math.max(0, from - SIZE) })}
-          >
-            上一页
-          </button>
-          <button
-            type="button"
-            id="s-next"
-            disabled={shown === null || ok === null || ctx !== null || hits.length < SIZE}
-            onClick={() => shown !== null && resend({ ...shown.query, from: from + SIZE })}
-          >
-            下一页
-          </button>
-        </div>
-        {mode === "cond" && !collapsed && chart.kind !== "busy" && (
-          <div class="hist-area" id="s-hist">
-            {chart.kind === "bars" && <Histogram name={chart.name} bars={chart.bars} onZoom={zoom} />}
-            {chart.kind === "error" && (
-              <div class="message">
-                {chart.lines.map((l) => (
-                  <p>{l}</p>
-                ))}
-              </div>
-            )}
-          </div>
+        {!fieldsCollapsed && (
+          <FieldsBar
+            fields={table ?? null}
+            error={current === null ? null : (fieldErrors.get(current) ?? null)}
+            open={openGroups}
+            onToggleGroup={(k) => {
+              const n = new Set(openGroups);
+              if (n.has(k)) n.delete(k);
+              else n.add(k);
+              setOpenGroups(n);
+            }}
+            values={values}
+            canExpand={canExpand}
+            onToggleField={(f) => void toggleField(f)}
+            onAdd={(f, negate, v) => addCondition(detailCondition(f, negate, v))}
+            onCollapse={() => {
+              saveFieldsCollapsed(true);
+              setFieldsCollapsed(true);
+            }}
+          />
         )}
-        {ctx !== null && (
-          <div class="context-bar" id="s-context">
-            <Time us={ctx.t} />
+        <div class="card">
+          <div class="info">
+            <span id="s-total">{"共 " + (count === null || mode === "sql" ? "—" : String(count)) + " 条"}</span>
+            {ok !== null && ctx === null && (
+              <span
+                id="s-info"
+                title="实际读取量是查询引擎扫描的数据文件记录数，不代表最终命中的记录数"
+              >
+                {info(ok.body)}
+              </span>
+            )}
+            <span class="spacer" />
+            <button type="button" id="s-hist-toggle" disabled={mode === "sql"} onClick={toggle}>
+              {toggleText}
+            </button>
+            {hiddenCols.size > 0 && (
+              <span class="restore" id="s-hidden-cols">
+                {[...hiddenCols].map((c) => (
+                  <button
+                    type="button"
+                    onClick={() => setHiddenCols(new Set([...hiddenCols].filter((x) => x !== c)))}
+                  >
+                    {"+ " + c}
+                  </button>
+                ))}
+              </span>
+            )}
             <button
               type="button"
-              id="s-context-back"
-              onClick={() => {
-                // 不发请求，结果表恢复为最近一次检索请求的结果
-                setCtx(null);
-                setViewed(-1);
-              }}
+              id="s-prev"
+              disabled={shown === null || ok === null || ctx !== null || from === 0}
+              onClick={() => shown !== null && resend({ ...shown.query, from: Math.max(0, from - SIZE) })}
             >
-              返回检索结果
+              上一页
             </button>
-            {ctx.center === null && (
-              <span class="hint" id="s-context-center-missing">
-                {CENTER_MISSING}
-              </span>
-            )}
-            {ctx.few && (
-              <span class="hint" id="s-context-few">
-                {CONTEXT_FEW}
-              </span>
-            )}
+            <button
+              type="button"
+              id="s-next"
+              disabled={shown === null || ok === null || ctx !== null || hits.length < SIZE}
+              onClick={() => shown !== null && resend({ ...shown.query, from: from + SIZE })}
+            >
+              下一页
+            </button>
           </div>
-        )}
-        <ResultArea
-          req={req}
-          prefix="s"
-          plain={ctx !== null}
-          render={(rows) => (
-            <Table
-              hits={ctx !== null ? ctx.rows : rows}
-              timeKeys={timeKeys}
-              terms={terms}
-              hidden={hiddenCols}
-              ascending={ctx === null && mode === "cond" && shown?.launched.mode === "cond" ? ascending : null}
-              viewed={viewed}
-              center={ctx?.center ?? -1}
-              onSort={() => {
-                if (shown === null || shown.launched.mode !== "cond") return;
-                const l = shown.launched;
-                const asc = !ascending;
-                setAscending(asc);
-                resend({ ...shown.query, sql: selectSql(l.stream, l.where, asc), from: 0 });
-              }}
-              onHide={(c) => setHiddenCols(new Set([...hiddenCols, c]))}
-              onOpen={(i) => {
+          {mode === "cond" && !collapsed && chart.kind !== "busy" && (
+            <div class="hist-area" id="s-hist">
+              {chart.kind === "bars" && <Histogram name={chart.name} bars={chart.bars} onZoom={zoom} />}
+              {chart.kind === "error" && (
+                <div class="message">
+                  {chart.lines.map((l) => (
+                    <p>{l}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {ctx !== null && (
+            <div class="context-bar" id="s-context">
+              <Time us={ctx.t} />
+              <button
+                type="button"
+                id="s-context-back"
+                onClick={() => {
+                  // 不发请求，结果表恢复为最近一次检索请求的结果
+                  setCtx(null);
+                  setViewed(-1);
+                }}
+              >
+                返回检索结果
+              </button>
+              {ctx.center === null && (
+                <span class="hint" id="s-context-center-missing">
+                  {CENTER_MISSING}
+                </span>
+              )}
+              {ctx.few && (
+                <span class="hint" id="s-context-few">
+                  {CONTEXT_FEW}
+                </span>
+              )}
+            </div>
+          )}
+          <ResultArea
+            req={req}
+            prefix="s"
+            plain={ctx !== null}
+            render={(rows) => (
+              <Table
+                hits={ctx !== null ? ctx.rows : rows}
+                timeKeys={timeKeys}
+                terms={terms}
+                hidden={hiddenCols}
+                ascending={ctx === null && mode === "cond" && shown?.launched.mode === "cond" ? ascending : null}
+                viewed={viewed}
+                center={ctx?.center ?? -1}
+                onSort={() => {
+                  if (shown === null || shown.launched.mode !== "cond") return;
+                  const l = shown.launched;
+                  const asc = !ascending;
+                  setAscending(asc);
+                  resend({ ...shown.query, sql: selectSql(l.stream, l.where, asc), from: 0 });
+                }}
+                onHide={(c) => setHiddenCols(new Set([...hiddenCols, c]))}
+                onOpen={(i) => {
+                  setDetail(i);
+                  setViewed(i);
+                }}
+              />
+            )}
+          />
+          {detail !== null && detailHits.length > 0 && (
+            <Detail
+              hits={detailHits}
+              index={detail}
+              onIndex={(i) => {
                 setDetail(i);
                 setViewed(i);
               }}
+              timeKeys={timeKeys}
+              textTerms={terms}
+              onAdd={(c) => {
+                // 条件模式加入未生效的条件，SQL 模式插到光标处（DETAIL-ADD）；都不发请求
+                if (mode === "cond") {
+                  addCondition(c);
+                  return;
+                }
+                const r = insertAtCursor(sql, cursor.current, conditionSql(c));
+                setSql(r.sql);
+                cursor.current = r.cursor;
+              }}
+              pending={pending}
+              onClose={() => setDetail(null)}
+              onCloseAndQuery={() => {
+                setDetail(null);
+                launch();
+              }}
+              onContext={(() => {
+                const row = detailHits[detail];
+                const from = contextStream(row);
+                return row === undefined || from === null ? undefined : (keep: boolean) => void browse(row, from, keep);
+              })()}
+              edges={ctx !== null ? CONTEXT_EDGES : undefined}
             />
           )}
-        />
-        {detail !== null && detailHits.length > 0 && (
-          <Detail
-            hits={detailHits}
-            index={detail}
-            onIndex={(i) => {
-              setDetail(i);
-              setViewed(i);
-            }}
-            timeKeys={timeKeys}
-            textTerms={terms}
-            onAdd={(c) => {
-              // 条件模式加入未生效的条件，SQL 模式插到光标处（DETAIL-ADD）；都不发请求
-              if (mode === "cond") {
-                addCondition(c);
-                return;
-              }
-              const r = insertAtCursor(sql, cursor.current, conditionSql(c));
-              setSql(r.sql);
-              cursor.current = r.cursor;
-            }}
-            pending={pending}
-            onClose={() => setDetail(null)}
-            onCloseAndQuery={() => {
-              setDetail(null);
-              launch();
-            }}
-            onContext={(() => {
-              const row = detailHits[detail];
-              const from = contextStream(row);
-              return row === undefined || from === null ? undefined : (keep: boolean) => void browse(row, from, keep);
-            })()}
-            edges={ctx !== null ? CONTEXT_EDGES : undefined}
-          />
-        )}
-      </div>
+        </div>
       </div>
     </section>
   );

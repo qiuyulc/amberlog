@@ -16,15 +16,23 @@ export interface SelectProps {
   "aria-label"?: string;
   class?: string;
   disabled?: boolean;
+  searchable?: boolean;
+  placeholder?: string;
 }
 
-export function Select({ id, value, options, onChange, "aria-label": ariaLabel, class: className, disabled = false }: SelectProps): JSX.Element {
+export function Select({ id, value, options, onChange, "aria-label": ariaLabel, class: className, disabled = false, searchable = false, placeholder }: SelectProps): JSX.Element {
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const selectedIndex = Math.max(0, options.findIndex((option) => option.value === value));
+  const [query, setQuery] = useState("");
+  const needle = query.trim().toLowerCase();
+  const visible = searchable && open && needle !== ""
+    ? options.filter((option) => option.label.toLowerCase().includes(needle) || option.value.toLowerCase().includes(needle))
+    : options;
+  const selectedIndex = Math.max(0, visible.findIndex((option) => option.value === value));
   const [activeIndex, setActiveIndex] = useState(selectedIndex);
-  const selected = options[selectedIndex];
+  const selected = options.find((option) => option.value === value);
   const listboxId = id + "-listbox";
 
   useEffect(() => {
@@ -40,58 +48,62 @@ export function Select({ id, value, options, onChange, "aria-label": ariaLabel, 
     if (!open) return;
     const option = document.getElementById(`${id}-option-${activeIndex}`);
     option?.scrollIntoView({ block: "nearest" });
-  }, [activeIndex, id, open]);
+  }, [activeIndex, id, open, needle]);
 
   const move = (step: number): void => {
-    if (options.length === 0) return;
-    setActiveIndex((index) => (index + step + options.length) % options.length);
+    if (visible.length === 0) return;
+    setActiveIndex((index) => (index + step + visible.length) % visible.length);
   };
 
   const choose = (index: number): void => {
-    const option = options[index];
+    const option = visible[index];
     if (option === undefined) return;
     onChange(option.value);
+    if (searchable) inputRef.current?.focus();
+    else triggerRef.current?.focus();
     setActiveIndex(index);
     setOpen(false);
-    triggerRef.current?.focus();
+  };
+
+  const show = (): void => {
+    setQuery("");
+    setActiveIndex(Math.max(0, options.findIndex((option) => option.value === value)));
+    setOpen(true);
   };
 
   const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.isComposing) return;
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
         if (!open) {
-          setActiveIndex(selectedIndex);
-          setOpen(true);
+          show();
         } else move(1);
         break;
       case "ArrowUp":
         event.preventDefault();
         if (!open) {
-          setActiveIndex(selectedIndex);
-          setOpen(true);
+          show();
         } else move(-1);
         break;
       case "Home":
-        if (open) {
+        if (open && !searchable) {
           event.preventDefault();
           setActiveIndex(0);
         }
         break;
       case "End":
-        if (open) {
+        if (open && !searchable) {
           event.preventDefault();
-          setActiveIndex(Math.max(0, options.length - 1));
+          setActiveIndex(Math.max(0, visible.length - 1));
         }
         break;
       case "Enter":
       case " ":
+        if (event.key === " " && searchable) return;
         event.preventDefault();
         if (open) choose(activeIndex);
-        else {
-          setActiveIndex(selectedIndex);
-          setOpen(true);
-        }
+        else show();
         break;
       case "Escape":
         if (open) {
@@ -106,33 +118,67 @@ export function Select({ id, value, options, onChange, "aria-label": ariaLabel, 
   };
 
   return (
-    <div ref={rootRef} class={`custom-select${className === undefined ? "" : ` ${className}`}`}>
-      <button
-        ref={triggerRef}
-        id={id}
-        type="button"
-        class="custom-select__trigger"
-        value={value}
-        role="combobox"
-        aria-label={ariaLabel}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listboxId}
-        aria-activedescendant={open && options[activeIndex] !== undefined ? `${id}-option-${activeIndex}` : undefined}
-        disabled={disabled}
-        onClick={() => {
-          setActiveIndex(selectedIndex);
-          setOpen((shown) => !shown);
-        }}
-        onKeyDown={onKeyDown}
-      >
-        <span class="custom-select__value">{selected?.label ?? value}</span>
-        <span class="custom-select__chevron" aria-hidden="true" />
-      </button>
-      {open && options.length > 0 && (
+    <div ref={rootRef} class={`custom-select${searchable ? " custom-select--searchable" : ""}${className === undefined ? "" : ` ${className}`}`}>
+      {searchable ? (
+        <>
+          <input
+            ref={inputRef}
+            id={id}
+            class="custom-select__input"
+            role="combobox"
+            aria-label={ariaLabel}
+            aria-autocomplete="list"
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            aria-controls={listboxId}
+            aria-activedescendant={open && visible[activeIndex] !== undefined ? `${id}-option-${activeIndex}` : undefined}
+            autocomplete="off"
+            spellcheck={false}
+            disabled={disabled}
+            placeholder={open ? placeholder : undefined}
+            value={open ? query : selected?.label ?? value}
+            onFocus={show}
+            onClick={() => { if (!open) show(); }}
+            onInput={(event) => {
+              setQuery(event.currentTarget.value);
+              setActiveIndex(0);
+              setOpen(true);
+            }}
+            onBlur={() => setOpen(false)}
+            onKeyDown={onKeyDown}
+          />
+          <span class="custom-select__chevron" aria-hidden="true" />
+        </>
+      ) : (
+        <button
+          ref={triggerRef}
+          id={id}
+          type="button"
+          class="custom-select__trigger"
+          value={value}
+          role="combobox"
+          aria-label={ariaLabel}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listboxId}
+          aria-activedescendant={open && visible[activeIndex] !== undefined ? `${id}-option-${activeIndex}` : undefined}
+          disabled={disabled}
+          onClick={() => {
+            setActiveIndex(selectedIndex);
+            setOpen((shown) => !shown);
+          }}
+          onKeyDown={onKeyDown}
+        >
+          <span class="custom-select__value">{selected?.label ?? value}</span>
+          <span class="custom-select__chevron" aria-hidden="true" />
+        </button>
+      )}
+      {open && (
         <div id={listboxId} class="custom-select__menu" role="listbox" aria-label={ariaLabel}>
-          {options.map((option, index) => (
+          {visible.length === 0 && <div class="custom-select__empty" role="status">无匹配选项</div>}
+          {visible.map((option, index) => (
             <div
+              key={option.value}
               id={`${id}-option-${index}`}
               class="custom-select__option"
               role="option"
@@ -140,7 +186,10 @@ export function Select({ id, value, options, onChange, "aria-label": ariaLabel, 
               data-active={index === activeIndex}
               data-value={option.value}
               onMouseDown={(event) => event.preventDefault()}
-              onClick={() => choose(index)}
+              onClick={(event) => {
+                event.preventDefault();
+                choose(index);
+              }}
             >
               <span>{option.label}</span>
               {option.value === value && <span class="custom-select__check" aria-hidden="true">✓</span>}

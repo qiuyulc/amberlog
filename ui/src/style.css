@@ -296,7 +296,6 @@ th {
 tbody tr:last-child td { border-bottom: none; }
 .jumps { white-space: nowrap; }
 .jumps button + button { margin-left: 4px; }
-.tz-filter { width: 7em; }
 .tz-select { min-width: 14em; }
 
 .custom-select {
@@ -375,16 +374,23 @@ tbody tr:last-child td { border-bottom: none; }
   font-weight: 750;
 }
 
+.custom-select__empty {
+  padding: 8px;
+  color: var(--muted);
+}
+
 .dataset-input {
   min-width: 12em;
 }
 
-.dataset-input__input {
+.dataset-input__input,
+.custom-select__input {
   width: 100%;
   padding-right: 28px;
 }
 
-.dataset-input > .custom-select__chevron {
+.dataset-input > .custom-select__chevron,
+.custom-select--searchable > .custom-select__chevron {
   position: absolute;
   top: 50%;
   right: 11px;

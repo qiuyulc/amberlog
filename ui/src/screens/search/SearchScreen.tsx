@@ -744,7 +744,9 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
           </div>
           {mode === "cond" && !collapsed && !emptyChart && (chart.kind === "bars" || chart.kind === "error") && (
             <div class="hist-area" id="s-hist">
-              {chart.kind === "bars" && <Histogram name={chart.name} bars={chart.bars} onZoom={zoom} />}
+              {chart.kind === "bars" && (
+                <Histogram name={chart.name} bars={chart.bars} interval={chart.us} range={chart.range} onZoom={zoom} />
+              )}
               {chart.kind === "error" && (
                 <div class="message">
                   {chart.lines.map((l) => (

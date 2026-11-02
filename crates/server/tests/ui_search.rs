@@ -128,7 +128,7 @@ fn disabled(b: &mut Browser, id: &str) -> bool {
 /// 分布图的柱：分桶起点与悬停文字。
 fn bars(b: &mut Browser) -> Vec<(String, String)> {
     let v = b.eval(
-        "[...document.querySelectorAll('#s-hist .hbar')].map(e => [e.dataset.start, e.title])",
+        "[...document.querySelectorAll('#s-hist .hbar')].map(e => [e.dataset.start, e.getAttribute('aria-label')])",
     );
     serde_json::from_value(v).unwrap()
 }
@@ -660,6 +660,9 @@ fn ui_search_histogram_draw() {
     let (_fx, s) = start(&[FUTURE]);
     let mut b = drawn(&s);
     assert_eq!(b.text("s-per-bar"), "每柱 1m");
+    assert!(b.exists("#s-hist .hist-axis"));
+    assert!(b.text("s-hist").contains("08:00"));
+    assert!(b.text("s-hist").contains("09:00"));
     assert!(
         b.wait_text("s-total", "共 4 条", WAIT),
         "{}",
@@ -675,17 +678,26 @@ fn ui_search_histogram_tooltip_timezone() {
     fill_range(&mut b, "app", "2026-10-30 16:00", "2026-10-30 17:00");
     query(&mut b);
     wait_bars(&mut b, 60);
-    for (_, title) in bars(&mut b) {
-        let want = if title.starts_with("2026-10-30 16:15:00.000000") {
+    for (_, label) in bars(&mut b) {
+        let want = if label.starts_with("2026-10-30 16:15:00") {
             "3"
-        } else if title.starts_with("2026-10-30 16:40:00.000000") {
+        } else if label.starts_with("2026-10-30 16:40:00") {
             "1"
         } else {
             "0"
         };
-        let n = title.split_whitespace().nth(2).unwrap_or_default();
-        assert_eq!(n, want, "{title}");
+        assert!(label.contains(&format!("，{want} 条日志")), "{label}");
     }
+    assert!(!b.exists("#s-hist .hbar[title]"), "柱体不再依赖原生 title");
+    b.eval(
+        "(() => { const e = document.querySelector('#s-hist .hbar[data-start=\"1793348100000000\"]'); \
+         const r = e.getBoundingClientRect(); e.dispatchEvent(new PointerEvent('pointerenter', \
+         {pointerType:'mouse',clientX:r.x+r.width/2,clientY:r.y+10})); })()"
+    );
+    assert!(b.wait_text("s-hist-tooltip", "2026-10-30 16:15:00", WAIT));
+    assert!(b.text("s-hist-tooltip").contains("2026-10-30 16:16:00"));
+    assert!(b.text("s-hist-tooltip").contains("3 条"));
+    assert!(b.text("s-hist-tooltip").contains("Asia/Shanghai"));
 }
 
 #[test]

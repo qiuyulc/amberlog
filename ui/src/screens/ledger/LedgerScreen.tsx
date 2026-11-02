@@ -9,6 +9,7 @@ import { setDatasets, streamOf } from "../../shell/datasets.ts";
 import { entries } from "../../shell/entries.ts";
 import { useResultRequest } from "../../shell/requests.ts";
 import { ResultArea } from "../../shell/ResultArea.tsx";
+import { TableScroll } from "../../shell/TableScroll.tsx";
 import { Time, TimeHeader } from "../../shell/Time.tsx";
 import { TimeRangeInputs, useTimeRange, type QuickChoice } from "../../shell/TimeRange.tsx";
 import { Bytes, Count } from "./Numbers.tsx";
@@ -92,59 +93,61 @@ const summaryCell = (g: (k: string) => Json | undefined, key: string): string =>
 
 function LedgerTable({ hits, onJump }: { hits: Hit[]; onJump: (dataset: string, to: "recon" | "search") => void }) {
   return (
-    <table class="ledger" aria-label="数据资产台账">
-      <thead>
-        <tr class="group">
-          {COLUMNS.map(() => (
+    <TableScroll rows={hits} label="数据资产台账表格">
+      <table class="ledger" aria-label="数据资产台账">
+        <thead>
+          <tr class="group">
+            {COLUMNS.map(() => (
+              <th />
+            ))}
+            <th colSpan={VERDICT_COLUMNS.length} class="verdicts">
+              各判定的时间窗数
+            </th>
             <th />
-          ))}
-          <th colSpan={VERDICT_COLUMNS.length} class="verdicts">
-            各判定的时间窗数
-          </th>
-          <th />
-          <th />
-          <th />
-        </tr>
-        <tr>
-          {COLUMNS.map((c) => (
-            <th>{c.label}</th>
-          ))}
-          {VERDICT_COLUMNS.map(([label]) => (
-            <th class="verdict">{label}</th>
-          ))}
-          <th>上报中断的来源数</th>
-          <th>按时间戳上报的来源</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {hits.map((h) => {
-          const g = (k: string): Json | undefined => h.get(k);
-          const dataset = g("dataset");
-          const tsSources = g("ts_sources");
-          return (
-            <tr>
-              {COLUMNS.map((c) => (
-                <td>{c.cell(g)}</td>
-              ))}
-              {VERDICT_COLUMNS.map(([, k]) => (
-                <td class="verdict">{summaryCell(g, k)}</td>
-              ))}
-              <td>{summaryCell(g, "silent_sources")}</td>
-              <td>{absent(tsSources) ? (g("reconciliation") === "unknown" ? "—" : "无") : rawText(tsSources)}</td>
-              <td class="jumps">
-                {typeof dataset === "string" && (
-                  <>
-                    <button type="button" onClick={() => onJump(dataset, "recon")}>对账</button>
-                    <button type="button" onClick={() => onJump(dataset, "search")}>检索</button>
-                  </>
-                )}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+            <th />
+            <th />
+          </tr>
+          <tr>
+            {COLUMNS.map((c) => (
+              <th>{c.label}</th>
+            ))}
+            {VERDICT_COLUMNS.map(([label]) => (
+              <th class="verdict">{label}</th>
+            ))}
+            <th>上报中断的来源数</th>
+            <th>按时间戳上报的来源</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {hits.map((h) => {
+            const g = (k: string): Json | undefined => h.get(k);
+            const dataset = g("dataset");
+            const tsSources = g("ts_sources");
+            return (
+              <tr>
+                {COLUMNS.map((c) => (
+                  <td>{c.cell(g)}</td>
+                ))}
+                {VERDICT_COLUMNS.map(([, k]) => (
+                  <td class="verdict">{summaryCell(g, k)}</td>
+                ))}
+                <td>{summaryCell(g, "silent_sources")}</td>
+                <td>{absent(tsSources) ? (g("reconciliation") === "unknown" ? "—" : "无") : rawText(tsSources)}</td>
+                <td class="jumps">
+                  {typeof dataset === "string" && (
+                    <>
+                      <button type="button" onClick={() => onJump(dataset, "recon")}>对账</button>
+                      <button type="button" onClick={() => onJump(dataset, "search")}>检索</button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </TableScroll>
   );
 }
 

@@ -9,6 +9,7 @@ import { datasets } from "../../shell/datasets.ts";
 import { entries, show } from "../../shell/entries.ts";
 import { useResultRequest } from "../../shell/requests.ts";
 import { ResultArea } from "../../shell/ResultArea.tsx";
+import { TableScroll } from "../../shell/TableScroll.tsx";
 import { Time, TimeHeader } from "../../shell/Time.tsx";
 import { TimeRangeInputs, useTimeRange, type QuickChoice } from "../../shell/TimeRange.tsx";
 import { DatasetInput } from "../../shell/DatasetInput.tsx";
@@ -55,43 +56,45 @@ function CountOr({ v, absent }: { v: Json | undefined; absent: string }) {
 
 function ReconTable({ hits }: { hits: Hit[] }) {
   return (
-    <table class="recon" aria-label="数据对账结果">
-      <thead>
-        <tr>
-          <th><TimeHeader label="窗口起点" /></th>
-          <th>发送数</th>
-          <th>发送来源</th>
-          <th>接收数</th>
-          <th>本地持久化确认数</th>
-          <th>「采集器 → 接收」差值</th>
-          <th>「接收 → 本地持久化」差值</th>
-          <th>按时间戳的发送数</th>
-          <th>按时间戳的确认数</th>
-          <th>判定</th>
-        </tr>
-      </thead>
-      <tbody>
-        {hits.map((h) => {
-          const g = (k: string): Json | undefined => h.get(k);
-          const ws = intOf(g("window_start"));
-          const sources = g("sent_sources");
-          return (
-            <tr>
-              <td>{ws !== null ? <Time us={ws} /> : rawText(g("window_start"))}</td>
-              <td class="num"><CountOr v={g("sent")} absent="未上报" /></td>
-              <td>{sources === null || sources === undefined ? "—" : rawText(sources)}</td>
-              <td class="num"><Count v={g("received")} /></td>
-              <td class="num"><Count v={g("durable")} /></td>
-              <td class="num"><CountOr v={g("gap_sent_received")} absent="—" /></td>
-              <td class="num"><Count v={g("gap_received_durable")} /></td>
-              <td class="num"><CountOr v={g("ts_sent")} absent="—" /></td>
-              <td class="num"><CountOr v={g("ts_durable")} absent="—" /></td>
-              <td>{verdictText(g("verdict"))}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <TableScroll rows={hits} label="数据对账表格">
+      <table class="recon" aria-label="数据对账结果">
+        <thead>
+          <tr>
+            <th><TimeHeader label="窗口起点" /></th>
+            <th>发送数</th>
+            <th>发送来源</th>
+            <th>接收数</th>
+            <th>本地持久化确认数</th>
+            <th>「采集器 → 接收」差值</th>
+            <th>「接收 → 本地持久化」差值</th>
+            <th>按时间戳的发送数</th>
+            <th>按时间戳的确认数</th>
+            <th>判定</th>
+          </tr>
+        </thead>
+        <tbody>
+          {hits.map((h) => {
+            const g = (k: string): Json | undefined => h.get(k);
+            const ws = intOf(g("window_start"));
+            const sources = g("sent_sources");
+            return (
+              <tr>
+                <td>{ws !== null ? <Time us={ws} /> : rawText(g("window_start"))}</td>
+                <td class="num"><CountOr v={g("sent")} absent="未上报" /></td>
+                <td>{sources === null || sources === undefined ? "—" : rawText(sources)}</td>
+                <td class="num"><Count v={g("received")} /></td>
+                <td class="num"><Count v={g("durable")} /></td>
+                <td class="num"><CountOr v={g("gap_sent_received")} absent="—" /></td>
+                <td class="num"><Count v={g("gap_received_durable")} /></td>
+                <td class="num"><CountOr v={g("ts_sent")} absent="—" /></td>
+                <td class="num"><CountOr v={g("ts_durable")} absent="—" /></td>
+                <td>{verdictText(g("verdict"))}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </TableScroll>
   );
 }
 

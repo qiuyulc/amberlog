@@ -235,6 +235,54 @@ main {
 
 .screen { display: flex; flex-direction: column; gap: 10px; }
 
+/* 台账 / 对账按窗口分配剩余空间，顶栏和筛选换行时由 flex 自动重排。 */
+.app-shell--fill {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.app-shell--fill > .topbar { flex-shrink: 0; }
+
+.app-shell--fill > main,
+.app-shell--fill .screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-shell--fill .screen > .bar,
+.app-shell--fill .screen > .notice { flex-shrink: 0; }
+
+.app-shell--fill .screen > .result {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /* 极窄或极矮窗口允许页面滚动，给表格保留可操作的空间。 */
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.app-shell--fill .result .stale {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-shell--fill .result .table-scroll,
+.app-shell--fill .result .result-state {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.app-shell--fill .result .slow,
+.app-shell--fill .result .limit,
+.app-shell--fill .result .message { flex-shrink: 0; }
+
 .bar {
   display: flex;
   flex-wrap: wrap;
@@ -348,6 +396,29 @@ main {
 .stale { opacity: 0.55; }
 
 table { border-collapse: separate; border-spacing: 0; width: 100%; }
+
+/* 只约束表格，统计、分页、说明与空状态保持在滚动区域外。 */
+.table-scroll {
+  max-height: clamp(280px, 60vh, 720px);
+  max-height: clamp(280px, 60dvh, 720px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+/* 表头整体吸顶，台账的分组行和列名行一起移动，避免两行叠在同一位置。 */
+.table-scroll thead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--panel);
+}
+
+.table-scroll th {
+  position: static;
+  top: auto;
+}
 
 th,
 td {

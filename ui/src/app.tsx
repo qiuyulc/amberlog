@@ -100,13 +100,13 @@ function TopBar() {
 export function App() {
   const { screen } = useStore(settings);
   return (
-    <>
+    <div class={screen === "search" ? "app-shell" : "app-shell app-shell--fill"}>
       <TopBar />
       <main>
         <SearchScreen hidden={screen !== "search"} />
         <LedgerScreen hidden={screen !== "ledger"} />
         <ReconScreen hidden={screen !== "recon"} />
       </main>
-    </>
+    </div>
   );
 }

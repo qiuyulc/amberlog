@@ -274,23 +274,6 @@
   margin: 4px 0;
 }
 
-/* 只约束表格，统计、分页、分布图与空状态保持在滚动区域外。 */
-#search .hits-scroll {
-  max-height: clamp(280px, 60vh, 720px);
-  max-height: clamp(280px, 60dvh, 720px);
-  overflow: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
-}
-
-#search table.hits th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--panel);
-}
-
 #search table.hits td {
   max-width: 40em;
   overflow: hidden;

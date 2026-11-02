@@ -1,7 +1,7 @@
 // 检索屏的结果表（REQ-AMB-UI-SEARCH-TABLE、TIME-COLUMNS、TABLE-SORT、HIGHLIGHT、TABLE-HIDE）。
 
 import { intOf, rawText, type Hit, type Json } from "../../lib/json.ts";
-import { useEffect, useRef } from "preact/hooks";
+import { TableScroll } from "../../shell/TableScroll.tsx";
 import { Time, TimeHeader } from "../../shell/Time.tsx";
 import { highlight } from "./fulltext.ts";
 
@@ -49,14 +49,9 @@ export interface TableProps {
 }
 
 export function Table(p: TableProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    // 新结果（查询、翻页、排序、上下文）从顶部查看。
-    if (scrollRef.current !== null) scrollRef.current.scrollTop = 0;
-  }, [p.hits]);
   const cols = columnsOf(p.hits).filter((c) => !p.hidden.has(c));
   return (
-    <div class="hits-scroll" ref={scrollRef} role="region" aria-label="检索结果表格，可滚动" tabIndex={0}>
+    <TableScroll rows={p.hits} label="检索结果表格">
       <table class="hits" aria-label="检索结果">
         <thead>
           <tr>
@@ -106,6 +101,6 @@ export function Table(p: TableProps) {
           ))}
         </tbody>
       </table>
-    </div>
+    </TableScroll>
   );
 }

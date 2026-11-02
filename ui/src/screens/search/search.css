@@ -15,6 +15,11 @@
   min-height: 2.2em;
 }
 
+#search .condition-editor {
+  flex: 1;
+  min-width: 0;
+}
+
 #search .chips {
   flex: 1;
   display: flex;
@@ -32,6 +37,20 @@
   border-color: var(--focus);
 }
 
+#search .chips.invalid {
+  border-color: var(--brick);
+}
+
+#search .cond-error,
+#search .cond-guide {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+#search .cond-error { color: var(--brick); }
+#search .cond-guide { color: var(--muted); }
+
 #search .chip {
   display: inline-flex;
   align-items: center;
@@ -40,6 +59,13 @@
   border: 1px solid var(--button);
   border-radius: 999px;
   white-space: nowrap;
+  max-width: 100%;
+}
+
+#search .chip-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 未生效的条件：虚线边（REQ-AMB-UI-SEARCH-STAGED） */
@@ -49,6 +75,7 @@
 }
 
 #search .chip-remove {
+  flex-shrink: 0;
   border: none;
   background: none;
   padding: 0 4px;
@@ -57,7 +84,7 @@
 #search .cond-input {
   position: relative;
   flex: 1;
-  min-width: 10em;
+  min-width: min(16em, 100%);
 }
 
 #search .cond-input input {
@@ -70,17 +97,22 @@
   z-index: 10;
   left: 0;
   top: 100%;
-  min-width: 14em;
+  width: 100%;
+  min-width: min(20em, 100%);
+  max-height: 260px;
+  overflow: auto;
   margin: 2px 0 0;
   padding: 2px 0;
   list-style: none;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
 }
 
 #search .hints li {
-  padding: 2px 10px;
+  padding: 7px 10px;
+  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
@@ -92,6 +124,10 @@
 #search .hints li.text {
   border-top: 1px solid var(--line);
   color: var(--link);
+}
+
+#search .hints li.text:first-child {
+  border-top: none;
 }
 
 #search .confirm {
@@ -636,6 +672,9 @@
   #search .condbox,
   #search .condbox textarea,
   #search .chips { min-width: 0; width: 100%; }
+  #search .condbox { flex: 1 0 100%; }
+  #search .condbox .modes,
+  #search .condition-editor { flex-basis: 100%; }
   #search .results { display: block; }
   #search .fields {
     width: 100%;

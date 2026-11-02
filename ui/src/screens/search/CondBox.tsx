@@ -139,6 +139,7 @@ export function CondBox(p: CondBoxProps) {
               autocomplete="off"
               spellcheck={false}
               aria-label="条件"
+              placeholder="输入关键词或字段条件，回车添加"
               value={input}
               onInput={(e) => {
                 setInput(e.currentTarget.value);
@@ -175,6 +176,7 @@ export function CondBox(p: CondBoxProps) {
           id="s-sql"
           spellcheck={false}
           aria-label="SQL"
+          placeholder="输入 SQL，如 SELECT * FROM app"
           value={p.sql}
           onInput={(e) => p.onSql(e.currentTarget.value, e.currentTarget.selectionStart)}
           onClick={cursorOf}

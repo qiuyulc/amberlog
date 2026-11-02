@@ -132,6 +132,7 @@ export function ReconScreen({ hidden }: { hidden: boolean }) {
         <DatasetInput
           id="r-dataset"
           listId="r-datasets"
+          placeholder="选择数据集"
           value={dataset}
           options={list}
           onInput={(value) => setDataset(value)}

@@ -115,6 +115,7 @@ export function TimeRangeInputs({ range, prefix }: { range: TimeRange; prefix: s
         autocomplete="off"
         spellcheck={false}
         aria-label="起"
+        placeholder="开始时间（YYYY-MM-DD HH:mm）"
         value={shown(m.start, m.startText)}
         onInput={(e) => range.edit("start", e.currentTarget.value)}
       />
@@ -125,11 +126,14 @@ export function TimeRangeInputs({ range, prefix }: { range: TimeRange; prefix: s
         autocomplete="off"
         spellcheck={false}
         aria-label="止"
+        placeholder="结束时间（YYYY-MM-DD HH:mm）"
         value={shown(m.end, m.endText)}
         onInput={(e) => range.edit("end", e.currentTarget.value)}
       />
       <Select
         id={prefix + "-quick"}
+        aria-label="快捷时间范围"
+        placeholder="选择时间范围"
         value={m.quick === null ? CUSTOM : String(m.quick)}
         options={[
           { value: CUSTOM, label: "自定义" },

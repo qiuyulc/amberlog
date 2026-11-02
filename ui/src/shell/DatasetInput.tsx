@@ -8,12 +8,13 @@ export interface DatasetInputProps {
   listId: string;
   value: string;
   options: readonly string[];
+  placeholder?: string;
   onInput: (value: string, inputType: string | undefined) => void;
   onBlur?: (value: string) => void;
   onEnter?: (value: string) => void;
 }
 
-export function DatasetInput({ id, listId, value, options, onInput, onBlur, onEnter }: DatasetInputProps): JSX.Element {
+export function DatasetInput({ id, listId, value, options, placeholder = "输入或选择数据集", onInput, onBlur, onEnter }: DatasetInputProps): JSX.Element {
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -83,6 +84,7 @@ export function DatasetInput({ id, listId, value, options, onInput, onBlur, onEn
         id={id}
         class="dataset-input__input"
         autocomplete="off"
+        placeholder={placeholder}
         aria-label="数据集"
         role="combobox"
         aria-autocomplete="list"

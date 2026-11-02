@@ -20,7 +20,7 @@ export interface SelectProps {
   placeholder?: string;
 }
 
-export function Select({ id, value, options, onChange, "aria-label": ariaLabel, class: className, disabled = false, searchable = false, placeholder }: SelectProps): JSX.Element {
+export function Select({ id, value, options, onChange, "aria-label": ariaLabel, class: className, disabled = false, searchable = false, placeholder = "请选择" }: SelectProps): JSX.Element {
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -135,7 +135,7 @@ export function Select({ id, value, options, onChange, "aria-label": ariaLabel, 
             autocomplete="off"
             spellcheck={false}
             disabled={disabled}
-            placeholder={open ? placeholder : undefined}
+            placeholder={placeholder}
             value={open ? query : selected?.label ?? value}
             onFocus={show}
             onClick={() => { if (!open) show(); }}
@@ -169,7 +169,9 @@ export function Select({ id, value, options, onChange, "aria-label": ariaLabel, 
           }}
           onKeyDown={onKeyDown}
         >
-          <span class="custom-select__value">{selected?.label ?? value}</span>
+          <span class="custom-select__value" data-placeholder={selected === undefined && value === ""}>
+            {selected?.label ?? (value || placeholder)}
+          </span>
           <span class="custom-select__chevron" aria-hidden="true" />
         </button>
       )}

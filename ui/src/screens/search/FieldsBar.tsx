@@ -50,6 +50,7 @@ export function FieldsBar(p: FieldsBarProps) {
           autocomplete="off"
           spellcheck={false}
           aria-label="筛选字段"
+          placeholder="筛选字段名称"
           value={filter}
           onInput={(e) => setFilter(e.currentTarget.value)}
         />

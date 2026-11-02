@@ -590,6 +590,7 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
         <DatasetInput
           id="s-stream"
           listId="s-streams"
+          placeholder="选择数据集"
           value={stream}
           options={list.map(streamOf)}
           onInput={(value, inputType) => {

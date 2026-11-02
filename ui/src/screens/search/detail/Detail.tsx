@@ -177,7 +177,7 @@ export function Detail(p: DetailProps) {
             class="detail-filter"
             autocomplete="off"
             aria-label="筛选字段"
-            placeholder="筛选"
+            placeholder="筛选字段名或值"
             value={filter}
             onInput={(e) => setFilter(e.currentTarget.value)}
           />

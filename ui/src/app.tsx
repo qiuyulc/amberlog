@@ -61,6 +61,8 @@ function TopBar() {
         <span>外观</span>
         <Select
           id="theme"
+          aria-label="外观"
+          placeholder="选择外观"
           value={s.theme}
           options={THEMES.map((theme) => ({ value: theme.id, label: theme.label }))}
           onChange={(value) => setTheme(value as Theme)}
@@ -72,6 +74,7 @@ function TopBar() {
           id="token"
           type="password"
           autocomplete="off"
+          placeholder="输入访问口令"
           class={s.tokenInvalid ? "invalid" : undefined}
           aria-invalid={s.tokenInvalid}
           value={s.token}

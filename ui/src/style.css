@@ -148,6 +148,16 @@ textarea:hover:not(:disabled) { border-color: var(--link); }
   outline-offset: 2px;
 }
 
+:is(button, input, select, textarea, [role="combobox"]):focus {
+  outline: none;
+  outline-offset: 0;
+}
+
+:is(input, select, textarea):focus:not(.invalid),
+button:focus-visible {
+  border-color: var(--focus);
+}
+
 textarea,
 .time-input,
 .time {

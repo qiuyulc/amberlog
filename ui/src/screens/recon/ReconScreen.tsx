@@ -151,7 +151,13 @@ export function ReconScreen({ hidden }: { hidden: boolean }) {
           {req.running ? "查询中" : "查询"}
         </button>
       </div>
-      <ResultArea req={req} prefix="r" render={(hits) => <ReconTable hits={hits} />} />
+      <ResultArea
+        req={req}
+        prefix="r"
+        initial={{ title: "查看数据对账", description: "选择数据集和时间范围，点击「查询」核对发送、接收与持久化记录数。" }}
+        emptyDescription="当前筛选下没有对账记录，可扩大时间范围、确认数据集，或检查「只看非一致」筛选。"
+        render={(hits) => <ReconTable hits={hits} />}
+      />
     </section>
   );
 }

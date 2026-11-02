@@ -570,7 +570,9 @@ fn ui_console_empty_result() {
     ingest_at(&s, "app", now_us() - 3 * HOUR_US, json!({"msg": "old"}));
     let mut b = open_with_token(&s);
     search_stream(&mut b, "app");
-    assert_eq!(b.text("s-result").trim(), "无结果");
+    assert!(b.text("s-result").contains("未找到匹配结果"));
+    assert!(b.text("s-result").contains("扩大时间范围"));
+    assert!(!b.exists("#s-result table"));
 }
 
 #[test]

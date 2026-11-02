@@ -561,8 +561,9 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
     saveCollapsed(!collapsed);
     setCollapsed(!collapsed);
   };
+  const emptyChart = chart.kind === "bars" && chart.bars.every((b) => b.n === "0");
   const toggleText =
-    mode === "sql" ? "手写 SQL 不画分布图" : chart.kind === "busy" ? "重画分布图" : collapsed ? "显示分布图" : "收起分布图";
+    mode === "sql" ? "手写 SQL 不画分布图" : chart.kind === "busy" ? "重画分布图" : emptyChart ? "暂无分布数据" : collapsed ? "显示分布图" : "收起分布图";
 
   const zoom = (a: number, b: number): void => {
     if (chart.kind !== "bars") return;
@@ -688,7 +689,10 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
         )}
         <div class="card">
           <div class="info">
-            <span id="s-total">{"共 " + (count === null || mode === "sql" ? "—" : String(count)) + " 条"}</span>
+            {view.kind === "idle" && <span class="result-heading">检索结果</span>}
+            <span id="s-total" hidden={view.kind === "idle"}>
+              {"共 " + (count === null || mode === "sql" ? "—" : String(count)) + " 条"}
+            </span>
             {ok !== null && ctx === null && (
               <span
                 id="s-info"
@@ -698,7 +702,7 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
               </span>
             )}
             <span class="spacer" />
-            <button type="button" id="s-hist-toggle" disabled={mode === "sql"} onClick={toggle}>
+            <button type="button" id="s-hist-toggle" disabled={mode === "sql" || emptyChart} onClick={toggle}>
               {toggleText}
             </button>
             {hiddenCols.size > 0 && (
@@ -716,6 +720,7 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
             <button
               type="button"
               id="s-prev"
+              hidden={view.kind === "idle"}
               disabled={shown === null || ok === null || ctx !== null || from === 0}
               onClick={() => shown !== null && resend({ ...shown.query, from: Math.max(0, from - SIZE) })}
             >
@@ -724,13 +729,14 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
             <button
               type="button"
               id="s-next"
+              hidden={view.kind === "idle"}
               disabled={shown === null || ok === null || ctx !== null || hits.length < SIZE}
               onClick={() => shown !== null && resend({ ...shown.query, from: from + SIZE })}
             >
               下一页
             </button>
           </div>
-          {mode === "cond" && !collapsed && chart.kind !== "busy" && (
+          {mode === "cond" && !collapsed && !emptyChart && (chart.kind === "bars" || chart.kind === "error") && (
             <div class="hist-area" id="s-hist">
               {chart.kind === "bars" && <Histogram name={chart.name} bars={chart.bars} onZoom={zoom} />}
               {chart.kind === "error" && (
@@ -771,6 +777,16 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
           <ResultArea
             req={req}
             prefix="s"
+            initial={
+              mode === "sql"
+                ? { title: "使用 SQL 检索日志", description: "输入 SQL 并选择时间范围，点击「查询」查看结果。" }
+                : { title: "开始检索日志", description: "选择数据集和时间范围，按需添加筛选条件，点击「查询」查看日志。" }
+            }
+            emptyDescription={
+              from > 0
+                ? "当前页没有更多记录，可返回上一页查看已有结果。"
+                : "可以扩大时间范围、减少筛选条件，或确认所选数据集中已有日志。"
+            }
             plain={ctx !== null}
             render={(rows) => (
               <Table

@@ -109,7 +109,7 @@ export function FieldsBar(p: FieldsBarProps) {
                       <p class="fvalues-status" role="status">暂无可用取值</p>
                     )}
                     {v?.kind === "ok" && v.rows.length > 0 && (
-                      <ul class="fvalues">
+                      <ul class="fvalues" tabIndex={0} aria-label={f.name + " 的常见取值，可滚动"}>
                         {v.rows.map((r) => (
                           <li key={r.json} class="fvalue">
                             <div class="fv-summary">

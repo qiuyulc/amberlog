@@ -234,6 +234,7 @@
 
 #search .fields {
   flex: 0 0 216px;
+  min-width: 0;
   max-height: 80vh;
   overflow-y: auto;
   padding: 6px;
@@ -262,11 +263,13 @@
 #search .fields-error p,
 #search .fvalues-error p {
   margin: 2px 0;
+  overflow-wrap: anywhere;
 }
 
 #search .fgroup-head {
   display: flex;
   justify-content: space-between;
+  gap: 8px;
   width: 100%;
   border: none;
   background: none;
@@ -276,15 +279,31 @@
   text-align: left;
 }
 
+#search .fgroup-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 #search .fcount {
+  flex-shrink: 0;
   color: var(--muted);
   font-weight: normal;
+}
+
+#search .fields .field {
+  display: block;
+  min-width: 0;
+  color: var(--text);
+  white-space: normal;
 }
 
 #search .field-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 #search .ftype {
@@ -314,32 +333,79 @@
 }
 
 #search .fvalues {
+  display: grid;
+  gap: 6px;
   list-style: none;
-  margin: 0 0 4px 2.4em;
+  margin: 4px 0 8px;
   padding: 0;
 }
 
 #search .fvalue {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 7px;
+  background: var(--panel-subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+#search .fv-summary {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
 }
 
 #search .fv-text {
   flex: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 #search .fv-n {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 45%;
+  padding: 0 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+#search .fv-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
 }
 
 #search .fv-eq,
 #search .fv-ne {
-  padding: 0 6px;
+  min-width: 0;
+  min-height: 28px;
+  padding: 2px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#search .fv-ne {
+  color: var(--muted);
+}
+
+#search .fvalues-status {
+  margin: 4px 0 8px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 /* 上下文浏览（REQ-AMB-UI-SEARCH-V2 上下文浏览一组）：中心行以加粗与左侧竖线标出 */

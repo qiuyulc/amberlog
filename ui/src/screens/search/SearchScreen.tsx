@@ -560,10 +560,14 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
     }
     saveCollapsed(!collapsed);
     setCollapsed(!collapsed);
+    // 收起期间的新查询只请求总条数；重新展开时补取该次查询的分布。
+    if (collapsed && chart.kind === "none" && histInput !== null) void sendHist(histInput);
   };
   const emptyChart = chart.kind === "bars" && chart.bars.every((b) => b.n === "0");
+  const showHistogramToggle =
+    mode === "cond" && histInput !== null && !emptyChart && (collapsed || chart.kind !== "none");
   const toggleText =
-    mode === "sql" ? "手写 SQL 不画分布图" : chart.kind === "busy" ? "重画分布图" : emptyChart ? "暂无分布数据" : collapsed ? "显示分布图" : "收起分布图";
+    chart.kind === "busy" ? "重画分布图" : collapsed ? "显示分布图" : "收起分布图";
 
   const zoom = (a: number, b: number): void => {
     if (chart.kind !== "bars") return;
@@ -702,9 +706,11 @@ export function SearchScreen({ hidden }: { hidden: boolean }) {
               </span>
             )}
             <span class="spacer" />
-            <button type="button" id="s-hist-toggle" disabled={mode === "sql" || emptyChart} onClick={toggle}>
-              {toggleText}
-            </button>
+            {showHistogramToggle && (
+              <button type="button" id="s-hist-toggle" onClick={toggle}>
+                {toggleText}
+              </button>
+            )}
             {hiddenCols.size > 0 && (
               <span class="restore" id="s-hidden-cols">
                 {[...hiddenCols].map((c) => (

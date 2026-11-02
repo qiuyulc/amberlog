@@ -706,20 +706,28 @@ fn ui_search_histogram_collapse() {
     ingest_now(&s, "app", json!({"a": 1}));
     let mut b = open_in(&s, "UTC", |_| {});
     screen(&mut b, "search");
+    assert!(!b.exists("#s-hist-toggle"), "尚未查询时不应显示分布图开关");
+    search_stream(&mut b, "app");
+    assert!(b.wait_text("s-hist-toggle", "收起分布图", WAIT));
     b.click("s-hist-toggle");
     search_stream(&mut b, "app");
     wait_requests(&mut b, 1, is_count);
     b.reopen(&url(&s));
     fill_token(&mut b, TOKEN);
-    assert_eq!(b.text("s-hist-toggle"), "显示分布图");
+    assert!(!b.exists("#s-hist-toggle"), "记住收起设置后，首次展示也不应显示开关");
     search_stream(&mut b, "app");
+    assert_eq!(b.text("s-hist-toggle"), "显示分布图");
     let counts = wait_requests(&mut b, 2, is_count);
     for c in &counts {
         assert_eq!(sql_of(c), "SELECT count(*) AS n FROM \"app\"");
     }
     std::thread::sleep(Duration::from_millis(500));
-    assert_eq!(requests_where(&mut b, is_histogram).len(), 0);
+    assert_eq!(requests_where(&mut b, is_histogram).len(), 1);
     assert!(!b.exists("#s-hist"), "收起后分布图区仍占位");
+    b.click("s-hist-toggle");
+    let h = wait_requests(&mut b, 2, is_histogram).remove(1);
+    assert!(b.wait_finished(&h, WAIT));
+    assert!(b.wait_text("s-hist-toggle", "收起分布图", WAIT));
 }
 
 #[test]
@@ -752,8 +760,7 @@ fn ui_search_histogram_sql_mode() {
     search_sql(&mut b, "SELECT host FROM \"app\"");
     std::thread::sleep(Duration::from_millis(500));
     assert_eq!(data_requests(&mut b).len(), before + 1);
-    assert_eq!(b.text("s-hist-toggle"), "手写 SQL 不画分布图");
-    assert!(disabled(&mut b, "s-hist-toggle"));
+    assert!(!b.exists("#s-hist-toggle"), "SQL 模式不应显示分布图开关");
     assert_eq!(b.text("s-total"), "共 — 条");
 }
 
@@ -811,6 +818,8 @@ fn ui_search_count_429_total_only() {
         answer_error(b, is_count, 429, "too_many_queries")
     });
     screen(&mut b, "search");
+    search_stream(&mut b, "app");
+    assert!(b.wait_text("s-hist-toggle", "收起分布图", WAIT));
     b.click("s-hist-toggle");
     search_stream(&mut b, "app");
     let c = wait_requests(&mut b, 1, is_count).remove(0);
